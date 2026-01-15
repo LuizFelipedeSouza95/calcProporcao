@@ -441,9 +441,20 @@
             const cilindroComprimento = parseFloat(document.getElementById('cilindro-comprimento').value);
             const canoDiametro = parseFloat(document.getElementById('cano-diametro').value);
             const canoComprimento = parseFloat(document.getElementById('cano-comprimento').value);
-            // Converter valor direto para gramas (ex: 25 -> 0.25g)
-            const gramaturaBBRaw = parseFloat(document.getElementById('bb-gramatura').value);
-            const gramaturaBB = gramaturaBBRaw ? gramaturaBBRaw / 100 : null;
+            // Aceitar formato decimal (0.48 ou .48), direto (48) ou string começando com ponto (.48)
+            const gramaturaBBInput = document.getElementById('bb-gramatura').value.trim();
+            let gramaturaBB = null;
+            if (gramaturaBBInput) {
+                // Se começar com ponto (ex: .48), adiciona zero antes
+                const valorNormalizado = gramaturaBBInput.startsWith('.') ? '0' + gramaturaBBInput : gramaturaBBInput;
+                const gramaturaBBRaw = parseFloat(valorNormalizado);
+                
+                if (!isNaN(gramaturaBBRaw)) {
+                    // Se o valor for menor que 1, assume que já está em gramas (ex: 0.48, .48)
+                    // Se for maior ou igual a 1, divide por 100 (ex: 48 -> 0.48g)
+                    gramaturaBB = gramaturaBBRaw < 1 ? gramaturaBBRaw : gramaturaBBRaw / 100;
+                }
+            }
 
             // Verificar se todos os campos estão preenchidos
             if (!cilindroDiametro || !cilindroComprimento || !canoDiametro || !canoComprimento) {
@@ -490,17 +501,17 @@
                         statusTexto = `✓ Proporção ideal para BBs de ${gramaturaFormatada}g!`;
                         statusClasse = 'status-ideal';
                         // Mostrar configuração mesmo quando ideal (caso queira ajustar)
-                        configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para manter a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1${diferenca !== 0 ? ` (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual)` : ' (configuração atual)'}.`;
+                        // configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para manter a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1${diferenca !== 0 ? ` (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual)` : ' (configuração atual)'}.`;
                         mostrarConfiguracao = true;
                     } else if (proporcao < ref.min) {
                         statusTexto = `⚠ Proporção abaixo do ideal para BBs de ${gramaturaFormatada}g`;
                         statusClasse = 'status-baixo';
-                        configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para atingir a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1 (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual).`;
+                        // configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para atingir a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1 (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual).`;
                         mostrarConfiguracao = true;
                     } else {
                         statusTexto = `⚠ Proporção acima do ideal para BBs de ${gramaturaFormatada}g`;
                         statusClasse = 'status-alto';
-                        configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para atingir a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1 (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual).`;
+                        // configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para atingir a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1 (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual).`;
                         mostrarConfiguracao = true;
                     }
                 } else {
