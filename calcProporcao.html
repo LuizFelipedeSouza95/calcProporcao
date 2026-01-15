@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de proporção - Airsoft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #0f1419;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a9eff;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2a3441;
+        }
+
+        .section-title {
+            color: #4a9eff;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            background: #0f1419;
+            border: 2px solid #2a3441;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4a9eff;
+            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            opacity: 1;
+            height: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+            align-items: start;
+        }
+
+        .second-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .result-section {
+            background: linear-gradient(135deg, #1a2332 0%, #2a3441 100%);
+            border: 2px solid #4a9eff;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            height: fit-content;
+        }
+
+        .result-details {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .tables-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .second-row {
+                grid-template-columns: 1fr;
+            }
+
+            .result-section {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .result-label {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4a9eff;
+            margin-bottom: 10px;
+        }
+
+        .result-status {
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .status-ideal {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .status-baixo {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+            border: 1px solid #ff9800;
+        }
+
+        .status-alto {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .cano-tip {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid #4a9eff;
+            border-radius: 8px;
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .cano-tip strong {
+            color: #4a9eff;
+        }
+
+        .reference-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #0f1419;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .reference-table th {
+            background: #2a3441;
+            color: #4a9eff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .reference-table td {
+            padding: 10px 12px;
+            border-top: 1px solid #2a3441;
+            color: #b0b0b0;
+        }
+
+        .reference-table tr:hover {
+            background: #1a2332;
+        }
+
+
+        .volume-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .volume-item {
+            background: #0f1419;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #2a3441;
+        }
+
+        .volume-label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .volume-value {
+            font-size: 1.1rem;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .volume-info {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .result-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔫 Calculadora de proporção</h1>
+        <p class="subtitle">Calcule a proporção ideal para seu Airsoft</p>
+
+        <div class="main-grid">
+            <!-- Coluna 1: Cilindro -->
+            <div class="section">
+                <h2 class="section-title">Cilindro</h2>
+                <div class="input-group">
+                    <label for="cilindro-diametro">Diâmetro (mm)</label>
+                    <input type="number" id="cilindro-diametro" step="0.1" min="0" placeholder="Ex: 23.0">
+                </div>
+                <div class="input-group">
+                    <label for="cilindro-comprimento">Comprimento Útil (mm)</label>
+                    <input type="number" id="cilindro-comprimento" step="0.1" min="0" placeholder="Ex: 50.0">
+                </div>
+            </div>
+
+            <!-- Coluna 2: Proporção Cylinder-to-Barrel -->
+            <div class="result-section" id="result-section">
+                <div class="result-label">Proporção Cylinder-to-Barrel</div>
+                <div class="result-value" id="result-value">-</div>
+            </div>
+
+            <!-- Coluna 3: Tabela de Referência -->
+            <div class="section">
+                <h2 class="section-title">Tabela de Referência</h2>
+                <table class="reference-table">
+                    <thead>
+                        <tr>
+                            <th>Proporção</th>
+                            <th>Gramatura Recomendada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&lt; 2.0:1</td>
+                            <td>BBs Leves (.20 - .25g)</td>
+                        </tr>
+                        <tr>
+                            <td>2.3:1 a 2.7:1</td>
+                            <td>BBs Médias (.30 - .36g)</td>
+                        </tr>
+                        <tr>
+                            <td>3.0:1 a 3.5:1</td>
+                            <td>BBs Pesadas (.40 - .48g)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Segunda linha: Cano e Gramatura de BB -->
+        <div class="second-row">
+            <div class="section">
+                <h2 class="section-title">Cano</h2>
+                <div class="grid">
+                    <div class="input-group">
+                        <label for="cano-diametro">Diâmetro (mm)</label>
+                        <input type="number" id="cano-diametro" step="0.1" min="0" placeholder="Ex: 6.08">
+                    </div>
+                    <div class="input-group">
+                        <label for="cano-comprimento">Comprimento (mm)</label>
+                        <input type="number" id="cano-comprimento" step="0.1" min="0" placeholder="Ex: 300.0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Gramatura desejada ou a que usa</h2>
+                <div class="input-group">
+                    <label for="bb-gramatura">Gramatura da BB:</label>
+                    <input type="number" id="bb-gramatura" step="1" min="0" placeholder="Ex: 25 (para 0.25g)">
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de detalhes do cálculo -->
+        <div class="result-details" id="result-details" style="display: none;">
+            <div class="section">
+                <h2 class="section-title">Detalhes do Cálculo</h2>
+                <div class="volume-info">
+                    <div class="volume-item">
+                        <div class="volume-label">Volume do Cilindro</div>
+                        <div class="volume-value" id="volume-cilindro">-</div>
+                    </div>
+                    <div class="volume-item">
+                        <div class="volume-label">Volume do Cano</div>
+                        <div class="volume-value" id="volume-cano">-</div>
+                    </div>
+                </div>
+                <div class="result-status" id="result-status" style="display: none; margin-top: 15px;"></div>
+                <div class="cano-tip" id="configuracao-bb-usuario" style="display: none; margin-top: 15px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para determinar categoria de gramatura
+        function determinarCategoriaGramatura(gramatura) {
+            if (gramatura >= 0.20 && gramatura <= 0.25) {
+                return { categoria: 'leve', min: 0, max: 2.0 };
+            } else if (gramatura >= 0.30 && gramatura <= 0.36) {
+                return { categoria: 'media', min: 2.3, max: 2.7 };
+            } else if (gramatura >= 0.40 && gramatura <= 0.48) {
+                return { categoria: 'pesada', min: 3.0, max: 3.5 };
+            }
+            return null;
+        }
+
+        // Função para determinar BB recomendada para uma proporção
+        function determinarBBRecomendada(proporcao) {
+            if (proporcao < 2.0) {
+                return { tipo: 'BBs Leves', faixa: '.20 - .25g', min: 0, max: 2.0 };
+            } else if (proporcao >= 2.3 && proporcao <= 2.7) {
+                return { tipo: 'BBs Médias', faixa: '.30 - .36g', min: 2.3, max: 2.7 };
+            } else if (proporcao >= 3.0 && proporcao <= 3.5) {
+                return { tipo: 'BBs Pesadas', faixa: '.40 - .48g', min: 3.0, max: 3.5 };
+            } else if (proporcao >= 2.0 && proporcao < 2.3) {
+                return { tipo: 'BBs Leves/Médias', faixa: '.20 - .36g', min: 2.0, max: 2.3 };
+            } else if (proporcao > 2.7 && proporcao < 3.0) {
+                return { tipo: 'BBs Médias/Pesadas', faixa: '.30 - .48g', min: 2.7, max: 3.0 };
+            } else {
+                return { tipo: 'Proporção fora das faixas', faixa: 'N/A', min: null, max: null };
+            }
+        }
+
+        // Função para calcular volume
+        function calcularVolume(diametro, comprimento) {
+            const raio = diametro / 2;
+            return Math.PI * Math.pow(raio, 2) * comprimento;
+        }
+
+        // Função para formatar número
+        function formatarNumero(numero, casasDecimais = 2) {
+            return numero.toFixed(casasDecimais);
+        }
+
+        // Função para calcular comprimento ideal do cano
+        function calcularComprimentoIdealCano(volumeCilindro, canoDiametro, proporcaoIdeal) {
+            const raioCano = canoDiametro / 2;
+            const volumeCanoIdeal = volumeCilindro / proporcaoIdeal;
+            const comprimentoIdeal = volumeCanoIdeal / (Math.PI * Math.pow(raioCano, 2));
+            return comprimentoIdeal;
+        }
+
+        // Função para calcular e exibir resultados
+        function calcular() {
+            const cilindroDiametro = parseFloat(document.getElementById('cilindro-diametro').value);
+            const cilindroComprimento = parseFloat(document.getElementById('cilindro-comprimento').value);
+            const canoDiametro = parseFloat(document.getElementById('cano-diametro').value);
+            const canoComprimento = parseFloat(document.getElementById('cano-comprimento').value);
+            // Converter valor direto para gramas (ex: 25 -> 0.25g)
+            const gramaturaBBRaw = parseFloat(document.getElementById('bb-gramatura').value);
+            const gramaturaBB = gramaturaBBRaw ? gramaturaBBRaw / 100 : null;
+
+            // Verificar se todos os campos estão preenchidos
+            if (!cilindroDiametro || !cilindroComprimento || !canoDiametro || !canoComprimento) {
+                document.getElementById('result-value').textContent = '-';
+                document.getElementById('result-details').style.display = 'none';
+                return;
+            }
+
+            // Calcular volumes
+            const volumeCilindro = calcularVolume(cilindroDiametro, cilindroComprimento);
+            const volumeCano = calcularVolume(canoDiametro, canoComprimento);
+
+            // Calcular proporção
+            const proporcao = volumeCilindro / volumeCano;
+
+            // Exibir resultados
+            document.getElementById('result-value').textContent = formatarNumero(proporcao, 2) + ':1';
+            document.getElementById('volume-cilindro').textContent = formatarNumero(volumeCilindro, 2) + ' mm³';
+            document.getElementById('volume-cano').textContent = formatarNumero(volumeCano, 2) + ' mm³';
+            document.getElementById('result-details').style.display = 'block';
+
+            // Determinar status
+            const statusElement = document.getElementById('result-status');
+            const configuracaoBBUsuario = document.getElementById('configuracao-bb-usuario');
+            const bbRecomendadaProporcao = document.getElementById('bb-recomendada-proporcao');
+            let statusTexto = '';
+            let statusClasse = '';
+            let configuracaoTexto = '';
+            let mostrarConfiguracao = false;
+
+            // Sempre determinar BB recomendada para a proporção atual
+            const bbRecomendada = determinarBBRecomendada(proporcao);
+
+            if (gramaturaBB && !isNaN(gramaturaBB)) {
+                const ref = determinarCategoriaGramatura(gramaturaBB);
+                const gramaturaFormatada = formatarNumero(gramaturaBB, 2);
+                if (ref) {
+                    // Sempre calcular e mostrar configuração recomendada quando há BB informada
+                    const proporcaoIdeal = (ref.min + ref.max) / 2;
+                    const comprimentoIdeal = calcularComprimentoIdealCano(volumeCilindro, canoDiametro, proporcaoIdeal);
+                    const diferenca = comprimentoIdeal - canoComprimento;
+
+                    if (proporcao >= ref.min && proporcao <= ref.max) {
+                        statusTexto = `✓ Proporção ideal para BBs de ${gramaturaFormatada}g!`;
+                        statusClasse = 'status-ideal';
+                        // Mostrar configuração mesmo quando ideal (caso queira ajustar)
+                        configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para manter a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1${diferenca !== 0 ? ` (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual)` : ' (configuração atual)'}.`;
+                        mostrarConfiguracao = true;
+                    } else if (proporcao < ref.min) {
+                        statusTexto = `⚠ Proporção abaixo do ideal para BBs de ${gramaturaFormatada}g`;
+                        statusClasse = 'status-baixo';
+                        configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para atingir a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1 (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual).`;
+                        mostrarConfiguracao = true;
+                    } else {
+                        statusTexto = `⚠ Proporção acima do ideal para BBs de ${gramaturaFormatada}g`;
+                        statusClasse = 'status-alto';
+                        configuracaoTexto = `💡 <strong>Cano ideal para BBs de ${gramaturaFormatada}g:</strong> Use um cano de aproximadamente <strong>${formatarNumero(comprimentoIdeal, 1)}mm</strong> para atingir a proporção ideal de ${formatarNumero(proporcaoIdeal, 2)}:1 (${diferenca > 0 ? '+' : ''}${formatarNumero(diferenca, 1)}mm em relação ao atual).`;
+                        mostrarConfiguracao = true;
+                    }
+                } else {
+                    // Gramatura fora das categorias conhecidas
+                    statusTexto = `BBs de ${gramaturaFormatada}g`;
+                    if (proporcao >= 2.3 && proporcao <= 2.7) {
+                        statusClasse = 'status-ideal';
+                    } else if (proporcao >= 3.0 && proporcao <= 3.5) {
+                        statusClasse = 'status-ideal';
+                    } else {
+                        statusClasse = 'status-baixo';
+                    }
+                    mostrarConfiguracao = false;
+                }
+            } else {
+                // Sem gramatura informada
+                statusTexto = `Proporção: ${formatarNumero(proporcao, 2)}:1`;
+                statusClasse = 'status-baixo';
+                mostrarConfiguracao = false;
+            }
+
+            // Atualizar elementos
+            if (statusTexto) {
+                statusElement.textContent = statusTexto;
+                statusElement.className = 'result-status ' + statusClasse;
+                statusElement.style.display = 'block';
+            } else {
+                statusElement.style.display = 'none';
+            }
+
+            // Mostrar configuração recomendada para BB do usuário (quando informada e não ideal)
+            if (mostrarConfiguracao && configuracaoTexto) {
+                configuracaoBBUsuario.innerHTML = configuracaoTexto;
+                configuracaoBBUsuario.style.display = 'block';
+            } else {
+                configuracaoBBUsuario.style.display = 'none';
+            }
+
+            // Mostrar seção de resultados
+            document.getElementById('result-section').style.display = 'block';
+        }
+
+        // Adicionar event listeners
+        document.getElementById('cilindro-diametro').addEventListener('input', calcular);
+        document.getElementById('cilindro-comprimento').addEventListener('input', calcular);
+        document.getElementById('cano-diametro').addEventListener('input', calcular);
+        document.getElementById('cano-comprimento').addEventListener('input', calcular);
+        document.getElementById('bb-gramatura').addEventListener('input', calcular);
+    </script>
+</body>
+
+</html>
